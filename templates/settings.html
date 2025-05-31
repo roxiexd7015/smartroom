@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Setări SmartRoom</title>
+  <style>
+    body { font-family:Poppins,sans-serif; background:#FAFAFA; padding:20px; }
+    .container { max-width:600px; margin:0 auto; }
+    label { display:block; margin-top:1em; }
+    input { width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; }
+    button { margin-top:20px; padding:10px 20px; border:none; border-radius:6px; background:#00BCD4; color:#fff; cursor:pointer; }
+    .flash { color: green; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Setări SmartRoom</h1>
+    {% with messages = get_flashed_messages(category_filter=["success"]) %}
+      {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('settings', token=token) }}">
+      <label>Temperatură minimă (°C)</label>
+      <input type="number" step="0.1" name="temp_min" value="{{ cfg.temp_min }}">
+
+      <label>Temperatură maximă (°C)</label>
+      <input type="number" step="0.1" name="temp_max" value="{{ cfg.temp_max }}">
+
+      <label>Umiditate minimă (%)</label>
+      <input type="number" step="0.1" name="hum_min" value="{{ cfg.hum_min }}">
+
+      <label>Umiditate maximă (%)</label>
+      <input type="number" step="0.1" name="hum_max" value="{{ cfg.hum_max }}">
+
+      <!-- Adaugă câmpuri similare pentru Light, VOC, Dust -->
+
+      <button type="submit">Salvează setările</button>
+    </form>
+  </div>
+</body>
+</html>
