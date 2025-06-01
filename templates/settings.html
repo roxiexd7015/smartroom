@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+  {% include 'header.html' %}
   <div class="container">
     <h1>Setări SmartRoom</h1>
     {% with messages = get_flashed_messages(category_filter=["success"]) %}

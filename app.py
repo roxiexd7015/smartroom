@@ -151,6 +151,15 @@ def get_latest():
     
 @app.route('/api/details/<sensor>')
 def sensor_details_api(sensor):
+    week_days = {
+    'Mon': 'Luni',
+    'Tue': 'Marți',
+    'Wed': 'Miercuri',
+    'Thu': 'Joi',
+    'Fri': 'Vineri',
+    'Sat': 'Sâmbătă',
+    'Sun': 'Duminică'
+    }
     range_type = request.args.get('range', 'latest')
 
     try:
@@ -205,7 +214,15 @@ def sensor_details_api(sensor):
         for row in rows:
             valoare = row[0]
             medie = row[1]
-            timestamp = row[2].strftime("%H:%M")
+            if range_type == 'day':
+                timestamp = row[2].strftime("%H:%M")
+            elif range_type == 'week':
+                zi_en = row[2].strftime("%a")  # 'Mon', 'Tue' etc.
+                timestamp = week_days.get(zi_en, zi_en)
+            elif range_type == 'month':
+                timestamp = row[2].strftime("%d.%m")  # gen: 01.06
+            else:
+                timestamp = row[2].strftime("%H:%M")
 
             d = {
                 'valoare': valoare,

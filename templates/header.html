@@ -1,0 +1,24 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/">🌿 SmartRoom</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="/dashboard">Panou principal</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path.startswith('/charts') or request.path.startswith('/details') %}active{% endif %}" href="/charts">Grafice</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/about' %}active{% endif %}" href="/about">Despre</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/settings' %}active{% endif %}" href="/settings">Setări</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
