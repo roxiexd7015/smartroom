@@ -90,7 +90,7 @@ let lastValues = [];
 
 async function fetchSensorData() {
   try {
-    const res = await fetch('/api/details/${sensor}?range=${currentRange}');
+    const res = await fetch(`/api/details/${sensor}?range=${currentRange}`);
     const data = await res.json();
 
     if (!data || data.length === 0) return;
