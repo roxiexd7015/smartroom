@@ -3,7 +3,16 @@ import MySQLdb
 
 app = Flask(__name__)
 
-# ✅ Ruta care primește datele de la ESP32 și le salvează în MySQL
+db_config = {
+    "host": "crossover.proxy.rlwy.net",
+    "port": 19637,
+    "user": "root",
+    "passwd": "FffrXcTPAjPMjUFuEKnvOQKGNqasUwrF",
+    "db": "railway",
+    "ssl": {'ssl': {}}
+}
+
+#Ruta care primește datele de la ESP32 și le salvează în MySQL
 @app.route('/data', methods=['POST'])
 def receive_data():
     try:
@@ -13,15 +22,7 @@ def receive_data():
         #    passwd="student",
         #    db="smartroom"
         #)
-        conn = MySQLdb.connect(
-            host="containers-us-west-xyz.railway.app",
-            user="root",
-            passwd="FffrXcTPAjPMjUFuEKnvOQKGNqasUwrF",
-            db="railway",
-            port=3306,
-            ssl={'ssl': {}}  #Railway
-        )
-
+        conn = MySQLdb.connect(**db_config)
         cursor = conn.cursor()
 
         # Extragere date trimise de ESP32
@@ -34,14 +35,14 @@ def receive_data():
         gas_resistance = float(request.form.get('gas_resistance'))
         gas_res_avg = float(request.form.get('gas_res_avg'))
 
-        # 🧮 Calculează scoruri parțiale
+        # Calculează scoruri parțiale
         score_temp = 10 if 20 <= temp <= 24 else (2 if temp < 18 or temp > 26 else 6)
         score_hum = 10 if 40 <= hum <= 60 else (2 if hum < 30 or hum > 70 else 6)
         score_light = 10 if 100 <= light <= 500 else (3 if light < 50 or light > 800 else 6)
         score_dust = 10 if dust < 50 else (2 if dust > 150 else 6)
         score_gas = 10 if gas_resistance >= 30 else (2 if gas_resistance < 10 else 6)
 
-        # 🧠 Scor total rotunjit la 1 zecimală
+        # Scor total rotunjit la 1 zecimală
         comfort_score = round((score_temp + score_hum + score_light + score_dust + score_gas) / 5, 1)
 
 
@@ -68,19 +69,12 @@ def receive_data():
         print("🔥 Eroare în /data:", e)
         return f"❌ Server error: {e}", 500
 
-# ✅ Ruta care returnează pagina cu carduri interactive
+# Ruta care returnează pagina cu carduri interactive
 @app.route('/')
 @app.route('/dashboard')
 def dashboard():
     try:
-        conn = MySQLdb.connect(
-            host="containers-us-west-xyz.railway.app",
-            user="root",
-            passwd="FffrXcTPAjPMjUFuEKnvOQKGNqasUwrF",
-            db="railway",
-            port=3306,
-            ssl={'ssl': {}}  #Railway
-        )
+        conn = MySQLdb.connect(**db_config)
         cursor = conn.cursor()
 
         cursor.execute("SELECT temperature, humidity, light, dust, gas_resistance, comfort_score FROM sensor_data ORDER BY timestamp DESC LIMIT 1")
@@ -120,18 +114,11 @@ def sensor_details(sensor):
     
     return render_template("details.html", sensor=sensor)
 
-# ✅ Ruta care returnează ultimele valori (folosită de JavaScript din dashboard.html)
+# Ruta care returnează ultimele valori (folosită de JavaScript din dashboard.html)
 @app.route('/api/latest')
 def get_latest():
     try:
-        conn = MySQLdb.connect(
-            host="containers-us-west-xyz.railway.app",
-            user="root",
-            passwd="FffrXcTPAjPMjUFuEKnvOQKGNqasUwrF",
-            db="railway",
-            port=3306,
-            ssl={'ssl': {}}  #Railway
-        )
+        conn = MySQLdb.connect(**db_config)
         cursor = conn.cursor()
         cursor.execute("""
             SELECT temperature, humidity, light, dust, dust_avg,
@@ -163,14 +150,7 @@ def get_latest():
 @app.route('/api/details/<sensor>')
 def api_sensor_data(sensor):
     try:
-        conn = MySQLdb.connect(
-            host="containers-us-west-xyz.railway.app",
-            user="root",
-            passwd="FffrXcTPAjPMjUFuEKnvOQKGNqasUwrF",
-            db="railway",
-            port=3306,
-            ssl={'ssl': {}}  #Railway
-        )
+        conn = MySQLdb.connect(**db_config)
         cursor = conn.cursor()
 
         # Dicționar cu numele coloanelor din baza de date
@@ -222,6 +202,6 @@ def api_sensor_data(sensor):
     except Exception as e:
         return jsonify({'error': str(e)})
 
-# ✅ Pornirea serverului Flask
+# Pornirea serverului Flask
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

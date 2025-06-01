@@ -1,4 +1,4 @@
-<!-- ✅ 1. HEAD – încarci Bootstrap și setezi stilul de bază -->
+<!--  1. HEAD – încarci Bootstrap și setezi stilul de bază -->
 <!DOCTYPE html>
 <html lang="ro">
 <head>
@@ -71,7 +71,7 @@
   </style>
 </head>
 
-<!-- ✅ 2. BODY – conținutul vizibil în pagină -->
+<!--  2. BODY – conținutul vizibil în pagină -->
 <body>
     <!-- Header + Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light">
@@ -99,7 +99,7 @@
     </div>
   </nav>
 
-  <!-- 🟦 3. Container cu carduri pentru senzori -->
+  <!--  3. Container cu carduri pentru senzori -->
   <div class="row" id="cards">
     <!-- Card Temperatură -->
     <div class="col-md-3">
@@ -164,7 +164,7 @@
     bar.style.width = (score * 10) + '%';
   </script>
 
-  <!-- ✅ Actualizare automată din API la fiecare 5 secunde -->
+  <!--  Actualizare automată din API la fiecare 5 secunde -->
   <script>
     async function fetchLatestData() {
       const res = await fetch('/api/latest');
