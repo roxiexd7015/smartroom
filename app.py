@@ -7,12 +7,21 @@ app = Flask(__name__)
 @app.route('/data', methods=['POST'])
 def receive_data():
     try:
+        #conn = MySQLdb.connect(
+        #    host="localhost",
+        #    user="root",
+        #    passwd="student",
+        #    db="smartroom"
+        #)
         conn = MySQLdb.connect(
-            host="localhost",
+            host="containers-us-west-xyz.railway.app",
             user="root",
-            passwd="student",
-            db="smartroom"
+            passwd="FffrXcTPAjPMjUFuEKnvOQKGNqasUwrF",
+            db="railway",
+            port=3306,
+            ssl={'ssl': {}}  #Railway
         )
+
         cursor = conn.cursor()
 
         # Extragere date trimise de ESP32
@@ -65,10 +74,12 @@ def receive_data():
 def dashboard():
     try:
         conn = MySQLdb.connect(
-            host="localhost",
+            host="containers-us-west-xyz.railway.app",
             user="root",
-            passwd="student",
-            db="smartroom"
+            passwd="FffrXcTPAjPMjUFuEKnvOQKGNqasUwrF",
+            db="railway",
+            port=3306,
+            ssl={'ssl': {}}  #Railway
         )
         cursor = conn.cursor()
 
@@ -114,10 +125,12 @@ def sensor_details(sensor):
 def get_latest():
     try:
         conn = MySQLdb.connect(
-            host="localhost",
+            host="containers-us-west-xyz.railway.app",
             user="root",
-            passwd="student",
-            db="smartroom"
+            passwd="FffrXcTPAjPMjUFuEKnvOQKGNqasUwrF",
+            db="railway",
+            port=3306,
+            ssl={'ssl': {}}  #Railway
         )
         cursor = conn.cursor()
         cursor.execute("""
@@ -151,10 +164,12 @@ def get_latest():
 def api_sensor_data(sensor):
     try:
         conn = MySQLdb.connect(
-            host="localhost",
+            host="containers-us-west-xyz.railway.app",
             user="root",
-            passwd="student",
-            db="smartroom"
+            passwd="FffrXcTPAjPMjUFuEKnvOQKGNqasUwrF",
+            db="railway",
+            port=3306,
+            ssl={'ssl': {}}  #Railway
         )
         cursor = conn.cursor()
 
