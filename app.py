@@ -1,5 +1,7 @@
 from flask import Flask, request, render_template, jsonify
+from datetime import datetime, timedelta
 import MySQLdb
+
 
 app = Flask(__name__)
 
@@ -148,59 +150,88 @@ def get_latest():
         return jsonify({'error': str(e)})
     
 @app.route('/api/details/<sensor>')
-def api_sensor_data(sensor):
+def sensor_details_api(sensor):
+    range_type = request.args.get('range', 'latest')
+
     try:
         conn = MySQLdb.connect(**db_config)
         cursor = conn.cursor()
 
-        # Dicționar cu numele coloanelor din baza de date
-        sensor_map = {
-            'dust': ('dust', 'dust_avg'),
-            'gas': ('gas_resistance', 'gas_res_avg'),
-            'temperature': ('temperature', None),
-            'humidity': ('humidity', None)
-        }
+        if sensor not in ['temperature', 'humidity', 'dust', 'gas']:
+            return jsonify([])
 
-        if sensor not in sensor_map:
-            return jsonify({'error': 'Senzor invalid'})
-
-        col1, col2 = sensor_map[sensor]
-
-        # Query diferit dacă există și coloană de medie
-        if col2:
-            query = f"""
-                SELECT {col1}, {col2}, timestamp
-                FROM sensor_data
-                ORDER BY timestamp DESC LIMIT 50
-            """
+        #decizie coloane
+        if sensor == 'gas':
+            column = 'gas_resistance'
+            avg_column = 'gas_res_avg'
+        elif sensor == 'dust':
+            column = 'dust'
+            avg_column = 'dust_avg'
         else:
-            query = f"""
-                SELECT {col1}, timestamp
-                FROM sensor_data
-                ORDER BY timestamp DESC LIMIT 50
-            """
+            column = sensor
+            avg_column = None
 
-        cursor.execute(query)
+        #construire query în funcție de interval
+        if range_type == 'latest':
+            query = f"""
+                SELECT {column}, {avg_column if avg_column else 'NULL'}, timestamp
+                FROM sensor_data
+                ORDER BY timestamp DESC
+                LIMIT 50
+            """
+            cursor.execute(query)
+        else:
+            if range_type == 'hour':
+                time_limit = datetime.now() - timedelta(hours=1)
+            elif range_type == 'day':
+                time_limit = datetime.now() - timedelta(days=1)
+            elif range_type == 'week':
+                time_limit = datetime.now() - timedelta(weeks=1)
+            else:
+                time_limit = datetime.now() - timedelta(hours=1)
+
+            query = f"""
+                SELECT {column}, {avg_column if avg_column else 'NULL'}, timestamp
+                FROM sensor_data
+                WHERE timestamp >= %s
+                ORDER BY timestamp ASC
+            """
+            cursor.execute(query, (time_limit,))
+
         rows = cursor.fetchall()
         conn.close()
 
         data = []
-        for row in rows[::-1]:
-            entry = {}
+        for row in rows:
+            valoare = row[0]
+            medie = row[1]
+            timestamp = row[2].strftime("%H:%M")
 
-            if col2:
-                entry['brut'] = row[0]
-                entry['medie'] = row[1]
-                entry['timestamp'] = row[2].strftime("%H:%M")
-            else:
-                entry['valoare'] = row[0]
-                entry['timestamp'] = row[1].strftime("%H:%M")
-            data.append(entry)
+            d = {
+                'valoare': valoare,
+                'timestamp': timestamp
+            }
+
+            if avg_column:
+                d['medie'] = medie
+
+            data.append(d)
 
         return jsonify(data)
 
     except Exception as e:
         return jsonify({'error': str(e)})
+
+@app.context_processor
+def inject_sensor_name():
+    return {
+        'sensor_name': {
+            'temperature': 'temperatură',
+            'humidity': 'umiditate',
+            'dust': 'praf',
+            'gas': 'gaz'
+        }
+    }
 
 # Pornirea serverului Flask
 if __name__ == '__main__':
