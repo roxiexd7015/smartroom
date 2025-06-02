@@ -23,6 +23,10 @@
       <canvas id="sensorChart"></canvas>
     </div>
 
+    <div id="no-data" class="alert alert-warning mt-3" style="display: none;">
+        ⚠️ Nu există date pentru acest interval de timp.
+    </div>
+
     <div class="mb-3">
         <label class="form-label me-2">Interval de timp:</label>
         <div class="btn-group" role="group" aria-label="Interval">
@@ -42,24 +46,24 @@
     <div id="sensor-info" class="mt-4">
       {% if sensor == 'temperature' %}
         <p class="text-muted">🌡️ Temperaturile ideale într-un dormitor sunt între <strong>20–24 °C</strong>. <span class="toggle-info" onclick="toggleExtra()">Află mai multe</span></p>
-        <div class="extra-info text-muted">
+        <div class="extra-info text-muted mb-3">
           Aceste temperaturi favorizează somnul odihnitor și mențin o stare generală de bine, prevenind disconfortul termic.
         </div>
       {% elif sensor == 'humidity' %}
         <p class="text-muted">💧 Nivelul optim de umiditate este între <strong>40–60%</strong>. <span class="toggle-info" onclick="toggleExtra()">Află mai multe</span></p>
-        <div class="extra-info text-muted">
+        <div class="extra-info text-muted mb-3">
           Nivelurile scăzute pot cauza uscăciunea mucoaselor și iritații, iar cele ridicate pot favoriza apariția mucegaiului.
         </div>
       {% elif sensor == 'dust' %}
         <p class="text-muted">🌫️ Particulele de praf peste <strong>150 µg/m³</strong> sunt considerate periculoase pentru sănătate. <span class="toggle-info" onclick="toggleExtra()">Află mai multe</span></p>
             <a href="https://www.who.int/publications/i/item/9789241550376" target="_blank" class="info-icon" title="Ghid OMS privind condițiile de locuit și sănătatea">i</a>
             <a href="https://www.airnow.gov/aqi/aqi-basics/" target="_blank" class="info-icon" title="Ghid EPA privind calitatea aerului">i</a>
-        <div class="extra-info text-muted">
+        <div class="extra-info text-muted mb-3">
           Praful poate conține alergeni, bacterii și particule fine care afectează sistemul respirator, mai ales la copii și vârstnici. Valorile între 12–35 µg/m³ sunt considerate moderate. Dacă sunt între 50–150 µg/m³, pot afecta persoanele sensibile. Peste 150, aerul este nesănătos pentru toată lumea. Nivelurile mari pot apărea din cauza prafului acumulat pe mobilier, circulației aerului sau ventilației slabe.
         </div>
       {% elif sensor == 'gas' %}
         <p class="text-muted">🧪 Rezistența gazului sub <strong>10 kΩ</strong> poate indica un nivel slab al calității aerului. <span class="toggle-info" onclick="toggleExtra()">Află mai multe</span></p>
-        <div class="extra-info text-muted">
+        <div class="extra-info text-muted mb-3">
           Valorile mici pot semnala prezența compușilor organici volatili (VOC) eliberați de produse de curățenie, mobilier sau plastic.
         </div>
       {% endif %}
@@ -102,7 +106,7 @@ let chart = new Chart(ctx, {
       x: {
         title: {
           display: true,
-          text: 'Ora'
+          text: '' //setat dinamic in functia fetchSensorData
         }
       }
     }
@@ -125,7 +129,19 @@ async function fetchSensorData() {
     const res = await fetch(`/api/details/${sensor}?range=${currentRange}`);
     const data = await res.json();
 
-    if (!data || data.length === 0) return;
+    if (!data || data.length === 0) {
+        document.getElementById("no-data").style.display = "block";
+        chart.data.labels = [];
+        chart.data.datasets = [];
+        chart.update();
+        document.getElementById("last-value").textContent = "-";
+        document.getElementById("average-value").textContent = "-";
+        return;
+    } 
+    else {
+        document.getElementById("no-data").style.display = "none";
+    }
+
 
     const labels = data.map(d => d.timestamp || d.x);
     const primary = data.map(d => d.valoare ?? d.brut ?? d.y);
@@ -207,7 +223,13 @@ async function fetchSensorData() {
         };
         chart.data.datasets.length = 1;
         }
-
+        // actualizare etichetă axă X în funcție de interval
+        let xTitle = "Timp";
+        if (currentRange === "latest") xTitle = "Ora";
+        else if (currentRange === "hour") xTitle = "Oră";
+        else if (currentRange === "day") xTitle = "Zi";
+        else if (currentRange === "week") xTitle = "Săptămână";
+        chart.options.scales.x.title.text = xTitle;
 
       chart.update();
     }
