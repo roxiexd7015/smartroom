@@ -93,10 +93,10 @@ function goToNextSensor() {
 //ascundere butoane cand ajungem intr-unul dintre capete
 window.addEventListener("DOMContentLoaded", () => {
     if (currentSensorIndex === 0) {
-        document.querySelector(".nav-btn.left").style.display = "none";
+        document.querySelector(".nav-left").style.display = "none";
     }
     if (currentSensorIndex === sensorList.length - 1) {
-        document.querySelector(".nav-btn.right").style.display = "none";
+        document.querySelector(".nav-right").style.display = "none";
     }
 });
 
