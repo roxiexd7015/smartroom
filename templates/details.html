@@ -18,14 +18,8 @@
     <h2>📊 Evoluție – {{ sensor_name[sensor] | capitalize }}</h2>
     <p>Urmărește valorile înregistrate în timp pentru senzorul de <strong>{{ sensor_name[sensor] }}</strong>.</p>
 
-    <div class="chart-wrapper my-4 position-relative">
-        <button class="nav-arrow nav-left" onclick="goToPrevSensor()">&lt;</button>
-
-        <div class="chart-container my-4">
-            <canvas id="sensorChart"></canvas>
-        </div>
-
-        <button class="nav-arrow nav-right" onclick="goToNextSensor()">&gt;</button>
+    <div class="chart-container my-4">
+        <canvas id="sensorChart"></canvas>
     </div>
 
     <div id="no-data" class="alert alert-warning mt-3" style="display: none;">
@@ -72,33 +66,6 @@
 <script>
 const ctx = document.getElementById('sensorChart').getContext('2d');
 const sensor = "{{ sensor }}";
-
-const sensorList = ["temperature", "humidity", "dust", "gas"];
-let currentSensorIndex = sensorList.indexOf(sensor);
-
-function goToPrevSensor() {
-    if (currentSensorIndex > 0) {
-        const prev = sensorList[currentSensorIndex - 1];
-        window.location.href = `/details/${prev}`;
-    }
-}
-
-function goToNextSensor() {
-    if (currentSensorIndex < sensorList.length - 1) {
-        const next = sensorList[currentSensorIndex + 1];
-        window.location.href = `/details/${next}`;
-    }
-}
-
-//ascundere butoane cand ajungem intr-unul dintre capete
-window.addEventListener("DOMContentLoaded", () => {
-    if (currentSensorIndex === 0) {
-        document.querySelector(".nav-left").style.display = "none";
-    }
-    if (currentSensorIndex === sensorList.length - 1) {
-        document.querySelector(".nav-right").style.display = "none";
-    }
-});
 
 let chart = new Chart(ctx, {
   type: 'line',
