@@ -18,6 +18,14 @@
     <h2>📊 Evoluție – {{ sensor_name[sensor] | capitalize }}</h2>
     <p>Urmărește valorile înregistrate în timp pentru senzorul de <strong>{{ sensor_name[sensor] }}</strong>.</p>
 
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <button class="btn btn-outline-secondary" id="prevSensorBtn" title="Senzor anterior">
+            &larr;
+        </button>
+        <button class="btn btn-outline-secondary" id="nextSensorBtn" title="Senzor următor">
+            &rarr;
+        </button>
+    </div>
 
     <div class="chart-container my-4">
       <canvas id="sensorChart"></canvas>
@@ -27,19 +35,7 @@
         ⚠️ Nu există date pentru acest interval de timp.
     </div>
 
-    <div class="mb-3">
-        <label class="form-label me-2">Interval de timp:</label>
-        <div class="btn-group" role="group" aria-label="Interval">
-            <button class="btn btn-outline-primary active" onclick="setRange('latest', this)">Ultimele 50</button>
-            <button class="btn btn-outline-primary" onclick="setRange('hour', this)">Pe oră</button>
-            <button class="btn btn-outline-primary" onclick="setRange('day', this)">Pe zi</button>
-            <button class="btn btn-outline-primary" onclick="setRange('week', this)">Pe săptămână</button>
-            <button class="btn btn-outline-primary" onclick="setRange('month', this)">Pe lună</button>
-        </div>
-    </div>
-
     <div id="chart-summary" class="mt-3 p-3 bg-light rounded shadow-sm">
-      <p><strong>📌 Interval:</strong> <span id="interval-label">Ultimele 50 valori</span></p>
       <p><strong>🔢 Ultima valoare:</strong> <span id="last-value">-</span></p>
       <p><strong>📊 Media:</strong> <span id="average-value">-</span></p>
     </div>
@@ -80,7 +76,22 @@
 const ctx = document.getElementById('sensorChart').getContext('2d');
 const sensor = "{{ sensor }}";
 
-let currentRange = "latest";
+const sensorList = ["temperature", "humidity", "dust", "gas"];
+let currentSensorIndex = sensorList.indexOf(sensor);
+
+document.getElementById("prevSensorBtn").addEventListener("click", () => {
+  if (currentSensorIndex > 0) {
+    const prevSensor = sensorList[currentSensorIndex - 1];
+    window.location.href = `/details/${prevSensor}`;
+  }
+});
+
+document.getElementById("nextSensorBtn").addEventListener("click", () => {
+  if (currentSensorIndex < sensorList.length - 1) {
+    const nextSensor = sensorList[currentSensorIndex + 1];
+    window.location.href = `/details/${nextSensor}`;
+  }
+});
 
 let chart = new Chart(ctx, {
   type: 'line',
@@ -107,27 +118,18 @@ let chart = new Chart(ctx, {
       x: {
         title: {
           display: true,
-          text: '' //setat dinamic in functia fetchSensorData
+          text: 'Ora'
         }
       }
     }
   }
 });
 
-
-function setRange(range, btn) {
-
-  currentRange = range;
-  document.querySelectorAll(".btn-group .btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  fetchSensorData();
-}
-
 let lastValues = [];
 
 async function fetchSensorData() {
   try {
-    const res = await fetch(`/api/details/${sensor}?range=${currentRange}`);
+    const res = await fetch(`/api/details/${sensor}`);
     const data = await res.json();
 
     if (!data || data.length === 0) {
@@ -144,8 +146,8 @@ async function fetchSensorData() {
     }
 
 
-    const labels = data.map(d => d.timestamp || d.x);
-    const primary = data.map(d => d.valoare ?? d.brut ?? d.y);
+    const labels = data.map(d => d.timestamp);
+    const primary = data.map(d => d.valoare);
     const secondary = data.map(d => d.medie).filter(v => v !== undefined);
 
     const hasSecondary = secondary.length > 0;
@@ -154,34 +156,14 @@ async function fetchSensorData() {
     //actualizare ultima valoare
     document.getElementById("last-value").textContent = primary[primary.length - 1]?.toFixed(1) ?? "-";
 
-    //actualizare a mediei daca exista valori secundare
-    if (hasSecondary) {
-        const avg = (secondary.reduce((a, b) => a + b, 0) / secondary.length).toFixed(1);
-        document.getElementById("average-value").textContent = avg;
-        } 
-    else {
-        //daca nu exista valori medii, se calculeaza media primara
-        const avg = (primary.reduce((a, b) => a + b, 0) / primary.length).toFixed(1);
-        document.getElementById("average-value").textContent = avg;
-    }
-
-    //actualizare a etichetei intervalului
-    let intervalText = {
-        "latest": "Ultimele 50 valori",
-        "hour": "Ultima oră",
-        "day": "Ultimele 24h",
-        "week": "Ultima săptămână",
-        "month": "Ultima lună"
-    }[currentRange] || "Interval necunoscut";
-
-    document.getElementById("interval-label").textContent = intervalText;
+    //actualizare a mediei
+    const avg = (secondary.reduce((a, b) => a + b, 0) / secondary.length).toFixed(1);
+    document.getElementById("average-value").textContent = avg;
 
     //comparare valori brute
     if (JSON.stringify(currentValues) !== JSON.stringify(lastValues)) {
       lastValues = currentValues;
 
-      chart.config.type = (currentRange === "week" || currentRange === "month") ? 'bar' : 'line';
-      
       // scalare automată a axei Y
       const minY = Math.min(...primary);
       const maxY = Math.max(...primary);
@@ -206,7 +188,7 @@ async function fetchSensorData() {
         chart.data.datasets[1] = {
             label: "Valori medii",
             data: secondary,
-            borderColor: "orange",  // 🔸 toate mediile portocalii
+            borderColor: "orange",  //toate mediile portocalii
             backgroundColor: "transparent",
             borderDash: [5, 5],
             tension: 0.3,
@@ -227,14 +209,6 @@ async function fetchSensorData() {
         };
         chart.data.datasets.length = 1;
         }
-        // actualizare etichetă axă X în funcție de interval
-        let xTitle = "Timp";
-        if (currentRange === "latest") xTitle = "Ora";
-        else if (currentRange === "hour") xTitle = "Oră";
-        else if (currentRange === "day") xTitle = "Zi";
-        else if (currentRange === "week") xTitle = "Săptămână";
-        chart.options.scales.x.title.text = xTitle;
-
       chart.update();
     }
   } catch (error) {
