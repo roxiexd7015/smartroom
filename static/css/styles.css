@@ -109,9 +109,47 @@ p {
   position: relative;
 }
 
+.chart-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
 /* ========== BUTOANE ========== */
 .btn-group .btn {
   font-size: 0.9rem;
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  line-height: 1;
+  font-weight: bold;
+  color: #444;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.nav-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.nav-btn.left {
+  left: -20px;
+}
+
+.nav-btn.right {
+  right: -20px;
 }
 
 /* ========== RESPONSIVE ========== */

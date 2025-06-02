@@ -18,17 +18,14 @@
     <h2>📊 Evoluție – {{ sensor_name[sensor] | capitalize }}</h2>
     <p>Urmărește valorile înregistrate în timp pentru senzorul de <strong>{{ sensor_name[sensor] }}</strong>.</p>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <button class="btn btn-outline-secondary" id="prevSensorBtn" title="Senzor anterior">
-            &larr;
-        </button>
-        <button class="btn btn-outline-secondary" id="nextSensorBtn" title="Senzor următor">
-            &rarr;
-        </button>
-    </div>
+    <div class="chart-wrapper my-4 position-relative">
+        <button class="nav-btn left" onclick="goToPrevSensor()">&lt;</button>
 
-    <div class="chart-container my-4">
-      <canvas id="sensorChart"></canvas>
+        <div class="chart-container">
+            <canvas id="sensorChart"></canvas>
+        </div>
+
+        <button class="nav-btn right" onclick="goToNextSensor()">&gt;</button>
     </div>
 
     <div id="no-data" class="alert alert-warning mt-3" style="display: none;">
@@ -79,18 +76,28 @@ const sensor = "{{ sensor }}";
 const sensorList = ["temperature", "humidity", "dust", "gas"];
 let currentSensorIndex = sensorList.indexOf(sensor);
 
-document.getElementById("prevSensorBtn").addEventListener("click", () => {
-  if (currentSensorIndex > 0) {
-    const prevSensor = sensorList[currentSensorIndex - 1];
-    window.location.href = `/details/${prevSensor}`;
-  }
-});
+function goToPrevSensor() {
+    if (currentSensorIndex > 0) {
+        const prev = sensorList[currentSensorIndex - 1];
+        window.location.href = `/details/${prev}`;
+    }
+}
 
-document.getElementById("nextSensorBtn").addEventListener("click", () => {
-  if (currentSensorIndex < sensorList.length - 1) {
-    const nextSensor = sensorList[currentSensorIndex + 1];
-    window.location.href = `/details/${nextSensor}`;
-  }
+function goToNextSensor() {
+    if (currentSensorIndex < sensorList.length - 1) {
+        const next = sensorList[currentSensorIndex + 1];
+        window.location.href = `/details/${next}`;
+    }
+}
+
+//ascundere butoane cand ajungem intr-unul dintre capete
+window.addEventListener("DOMContentLoaded", () => {
+    if (currentSensorIndex === 0) {
+        document.querySelector(".nav-btn.left").style.display = "none";
+    }
+    if (currentSensorIndex === sensorList.length - 1) {
+        document.querySelector(".nav-btn.right").style.display = "none";
+    }
 });
 
 let chart = new Chart(ctx, {
