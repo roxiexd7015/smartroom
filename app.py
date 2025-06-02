@@ -195,34 +195,59 @@ def sensor_details_api(sensor):
             elif range_type == 'day':
                 time_limit = datetime.now() - timedelta(days=1)
             elif range_type == 'week':
-                time_limit = datetime.now() - timedelta(weeks=1)
+                time_limit = datetime.now() - timedelta(7)
+            elif range_type == 'month':
+                time_limit = datetime.now() - timedelta(days=30)
             else:
                 time_limit = datetime.now() - timedelta(hours=1)
 
-            query = f"""
-                SELECT {column}, {avg_column if avg_column else 'NULL'}, timestamp
-                FROM sensor_data
-                WHERE timestamp >= %s
-                ORDER BY timestamp ASC
-            """
+            if range_type in ['week', 'month']:
+                # Agregăm pe zi
+                query = f"""
+                    SELECT DATE(timestamp) AS zi, 
+                        AVG({column}), 
+                        AVG({avg_column}) 
+                    FROM sensor_data
+                    WHERE timestamp >= %s
+                    GROUP BY zi
+                    ORDER BY zi ASC
+                """
+            else:
+                # Păstrăm toate valorile
+                query = f"""
+                    SELECT {column}, {avg_column if avg_column else 'NULL'}, timestamp
+                    FROM sensor_data
+                    WHERE timestamp >= %s
+                    ORDER BY timestamp ASC
+                """
             cursor.execute(query, (time_limit,))
+
 
         rows = cursor.fetchall()
         conn.close()
 
         data = []
-        for row in rows:
+
+        #inversare lista pentru a afisa valorile in ordine cronologica la "latest"
+        if range_type == 'latest':
+            iter_rows = rows[::-1]  
+        else:
+            iter_rows = rows
+
+        for row in iter_rows:
             valoare = row[0]
             medie = row[1]
-            if range_type == 'day':
-                timestamp = row[2].strftime("%H:%M")
-            elif range_type == 'week':
-                zi_en = row[2].strftime("%a")  # 'Mon', 'Tue' etc.
+
+            if range_type == 'week':
+                zi_en = row[0].strftime("%a")  # row[0] e deja DATE(timestamp)
                 timestamp = week_days.get(zi_en, zi_en)
             elif range_type == 'month':
-                timestamp = row[2].strftime("%d.%m")  # gen: 01.06
+                timestamp = row[0].strftime("%d.%m")
+            elif range_type in ['day', 'hour']:
+                timestamp = row[2].strftime("%H:%M")
             else:
                 timestamp = row[2].strftime("%H:%M")
+
 
             d = {
                 'valoare': valoare,

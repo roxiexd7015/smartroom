@@ -30,10 +30,11 @@
     <div class="mb-3">
         <label class="form-label me-2">Interval de timp:</label>
         <div class="btn-group" role="group" aria-label="Interval">
-            <button type="button" class="btn btn-outline-primary active" onclick="setRange('latest', this)">Ultimele 50</button>
-            <button type="button" class="btn btn-outline-primary" onclick="setRange('hour', this)">Pe ore</button>
-            <button type="button" class="btn btn-outline-primary" onclick="setRange('day', this)">Pe zile</button>
-            <button type="button" class="btn btn-outline-primary" onclick="setRange('week', this)">Pe săptămâni</button>
+            <button class="btn btn-outline-primary active" onclick="setRange('latest', this)">Ultimele 50</button>
+            <button class="btn btn-outline-primary" onclick="setRange('hour', this)">Pe oră</button>
+            <button class="btn btn-outline-primary" onclick="setRange('day', this)">Pe zi</button>
+            <button class="btn btn-outline-primary" onclick="setRange('week', this)">Pe săptămână</button>
+            <button class="btn btn-outline-primary" onclick="setRange('month', this)">Pe lună</button>
         </div>
     </div>
 
@@ -68,7 +69,7 @@
         </div>
       {% endif %}
     </div>
-    <a href="/dashboard" class="btn btn-secondary">← Înapoi la Dashboard</a>
+    <a href="/dashboard" class="btn btn-secondary">← Înapoi la Panoul Principal</a>
   </div>
 
 <!-- Chart.js -->
@@ -169,7 +170,8 @@ async function fetchSensorData() {
         "latest": "Ultimele 50 valori",
         "hour": "Ultima oră",
         "day": "Ultimele 24h",
-        "week": "Ultima săptămână"
+        "week": "Ultima săptămână",
+        "month": "Ultima lună"
     }[currentRange] || "Interval necunoscut";
 
     document.getElementById("interval-label").textContent = intervalText;
@@ -178,6 +180,8 @@ async function fetchSensorData() {
     if (JSON.stringify(currentValues) !== JSON.stringify(lastValues)) {
       lastValues = currentValues;
 
+      chart.config.type = (currentRange === "week" || currentRange === "month") ? 'bar' : 'line';
+      
       // scalare automată a axei Y
       const minY = Math.min(...primary);
       const maxY = Math.max(...primary);
