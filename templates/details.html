@@ -18,14 +18,14 @@
     <h2>📊 Evoluție – {{ sensor_name[sensor] | capitalize }}</h2>
     <p>Urmărește valorile înregistrate în timp pentru senzorul de <strong>{{ sensor_name[sensor] }}</strong>.</p>
 
-    <div class="chart-wrapper my-4 position-relative">
-        <button class="nav-btn left" onclick="goToPrevSensor()">&lt;</button>
+    <div class="position-relative">
+        <button class="nav-arrow nav-left" onclick="goToPrevSensor()">&lt;</button>
 
-        <div class="chart-container">
+        <div class="chart-container my-4">
             <canvas id="sensorChart"></canvas>
         </div>
 
-        <button class="nav-btn right" onclick="goToNextSensor()">&gt;</button>
+        <button class="nav-arrow nav-right" onclick="goToNextSensor()">&gt;</button>
     </div>
 
     <div id="no-data" class="alert alert-warning mt-3" style="display: none;">
@@ -163,9 +163,15 @@ async function fetchSensorData() {
     //actualizare ultima valoare
     document.getElementById("last-value").textContent = primary[primary.length - 1]?.toFixed(1) ?? "-";
 
-    //actualizare a mediei
-    const avg = (secondary.reduce((a, b) => a + b, 0) / secondary.length).toFixed(1);
+    //actualizare a mediei pentru cele doua cazuri (gaz/praf vs temp/umid)
+    let avg = "-";
+    if (hasSecondary && secondary.length > 0) {
+        avg = (secondary.reduce((a, b) => a + b, 0) / secondary.length).toFixed(1);
+    } else if (primary.length > 0) {
+        avg = (primary.reduce((a, b) => a + b, 0) / primary.length).toFixed(1);
+    }
     document.getElementById("average-value").textContent = avg;
+
 
     //comparare valori brute
     if (JSON.stringify(currentValues) !== JSON.stringify(lastValues)) {

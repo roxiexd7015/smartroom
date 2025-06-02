@@ -121,35 +121,51 @@ p {
   font-size: 0.9rem;
 }
 
-.nav-btn {
+.nav-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  font-size: 20px;
-  line-height: 1;
+  width: 48px;
+  height: 48px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #444;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: all 0.2s ease;
-  z-index: 2;
+  transition: all 0.2s ease-in-out;
+  z-index: 10;
 }
 
-.nav-btn:hover {
+.nav-arrow:hover {
   background-color: #f0f0f0;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
-.nav-btn.left {
-  left: -20px;
+.nav-left {
+  left: -28px;
 }
 
-.nav-btn.right {
-  right: -20px;
+.nav-right {
+  right: -28px;
+}
+
+@media (max-width: 768px) {
+  .nav-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+  }
+  .nav-left {
+    left: -20px;
+  }
+  .nav-right {
+    right: -20px;
+  }
 }
 
 /* ========== RESPONSIVE ========== */
