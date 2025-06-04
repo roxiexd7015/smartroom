@@ -18,8 +18,12 @@
     <h2>📊 Evoluție – {{ sensor_name[sensor] | capitalize }}</h2>
     <p>Urmărește valorile înregistrate în timp pentru senzorul de <strong>{{ sensor_name[sensor] }}</strong>.</p>
 
-    <div class="chart-container my-4">
-        <canvas id="sensorChart"></canvas>
+    <div class="container-fluid px-2">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-2">
+            <canvas id="sensorChart" style="width:100%; height:50vh;"></canvas>
+            </div>
+        </div>
     </div>
 
     <div id="no-data" class="alert alert-warning mt-3" style="display: none;">
