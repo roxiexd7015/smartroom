@@ -164,7 +164,9 @@ async function fetchSensorData() {
             data: primary,
             borderColor: sensor === 'dust' ? 'gray' :
                         sensor === 'gas' ? 'green' : 'black', // fallback dacă apare altceva
-            backgroundColor: "transparent",
+            backgroundColor: sensor === ' gas' ? "rgba(0, 128, 0, 0.1)" :
+                            sensor === 'dust' ? "rgba(128, 128, 128, 0.1)" :
+                            "rgba(0,0,0,0.05)",
             tension: 0.3,
             pointRadius: 2,
             pointHoverRadius: 4
@@ -186,7 +188,10 @@ async function fetchSensorData() {
             borderColor: sensor === 'temperature' ? 'red' :
                         sensor === 'humidity' ? 'blue' :
                         'green', // fallback dacă apare alt senzor
-            backgroundColor: "transparent",
+            fill: true,
+            backgroundColor: sensor === 'temperature' ? "rgba(255, 0, 0, 0.1)" :
+                            sensor === 'humidity' ? "rgba(0, 123, 255, 0.1)" :
+                            "rgba(0,0,0,0.05)",
             tension: 0.3,
             pointRadius: 2,
             pointHoverRadius: 4
