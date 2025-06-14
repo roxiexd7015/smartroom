@@ -1,18 +1,7 @@
-<!DOCTYPE html>
-<html lang="ro">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Detalii – {{ sensor_name[sensor]|capitalize }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% extends "base.html" %}
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+{% block title %}Detalii – {{ sensor_name[sensor]|capitalize }}{% endblock %}
 
-</head>
-
-<body>
   {% include 'header.html' %}
   <div class="container">
     <h2>📊 Evoluție – {{ sensor_name[sensor] | capitalize }}</h2>
@@ -37,24 +26,22 @@
 
     <div id="sensor-info" class="mt-4">
       {% if sensor == 'temperature' %}
-        <p class="text-muted">🌡️ Temperaturile ideale într-un dormitor sunt între <strong>20–24 °C</strong>. <span class="toggle-info" onclick="toggleExtra()">Află mai multe</span></p>
+        <p class="text-muted">🌡️ Temperaturile ideale într-un dormitor sunt între <strong>20-24 °C</strong>. <span class="toggle-info" onclick="toggleExtra()">Află mai multe</span></p>
         <div class="extra-info text-muted mb-3">
           Aceste temperaturi favorizează somnul odihnitor și mențin o stare generală de bine, prevenind disconfortul termic.
         </div>
       {% elif sensor == 'humidity' %}
-        <p class="text-muted">💧 Nivelul optim de umiditate este între <strong>40–60%</strong>. <span class="toggle-info" onclick="toggleExtra()">Află mai multe</span></p>
+        <p class="text-muted">💧 Nivelul optim de umiditate este între <strong>40-60%</strong>. <span class="toggle-info" onclick="toggleExtra()">Află mai multe</span></p>
         <div class="extra-info text-muted mb-3">
           Nivelurile scăzute pot cauza uscăciunea mucoaselor și iritații, iar cele ridicate pot favoriza apariția mucegaiului.
         </div>
       {% elif sensor == 'dust' %}
         <p class="text-muted">🌫️ Particulele de praf peste <strong>150 µg/m³</strong> sunt considerate periculoase pentru sănătate. <span class="toggle-info" onclick="toggleExtra()">Află mai multe</span></p>
-            <a href="https://www.who.int/publications/i/item/9789241550376" target="_blank" class="info-icon" title="Ghid OMS privind condițiile de locuit și sănătatea">i</a>
-            <a href="https://www.airnow.gov/aqi/aqi-basics/" target="_blank" class="info-icon" title="Ghid EPA privind calitatea aerului">i</a>
         <div class="extra-info text-muted mb-3">
-          Praful poate conține alergeni, bacterii și particule fine care afectează sistemul respirator, mai ales la copii și vârstnici. Valorile între 12–35 µg/m³ sunt considerate moderate. Dacă sunt între 50–150 µg/m³, pot afecta persoanele sensibile. Peste 150, aerul este nesănătos pentru toată lumea. Nivelurile mari pot apărea din cauza prafului acumulat pe mobilier, circulației aerului sau ventilației slabe.
+          Praful poate conține alergeni, bacterii și particule fine care afectează sistemul respirator, mai ales la copii și vârstnici. Valorile între 12–35 µg/m³ sunt considerate moderate. Dacă sunt între 50-150 µg/m³, pot afecta persoanele sensibile. Peste 150, aerul este nesănătos pentru toată lumea. Nivelurile mari pot apărea din cauza prafului acumulat pe mobilier, circulației aerului sau ventilației slabe.
         </div>
       {% elif sensor == 'gas' %}
-        <p class="text-muted">🧪 Rezistența gazului sub <strong>10 kΩ</strong> poate indica un nivel slab al calității aerului. <span class="toggle-info" onclick="toggleExtra()">Află mai multe</span></p>
+        <p class="text-muted">🧪 Rezistența gazului sub <strong>10 kΩ</strong> poate indica un nivel slab al calității aerului. <span class="toggle-info" onclick="toggleExtra()">Află mai multe</span></p>
         <div class="extra-info text-muted mb-3">
           Valorile mici pot semnala prezența compușilor organici volatili (VOC) eliberați de produse de curățenie, mobilier sau plastic.
         </div>

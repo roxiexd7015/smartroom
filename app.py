@@ -40,13 +40,12 @@ def receive_data():
         # Calculează scoruri parțiale
         score_temp = 10 if 20 <= temp <= 24 else (2 if temp < 18 or temp > 26 else 6)
         score_hum = 10 if 40 <= hum <= 60 else (2 if hum < 30 or hum > 70 else 6)
-        score_light = 10 if 100 <= light <= 500 else (3 if light < 50 or light > 800 else 6)
+        score_light = 10 if 300 <= light <= 500 else (3 if light < 150 or light > 800 else 6)
         score_dust = 10 if dust < 50 else (2 if dust > 150 else 6)
         score_gas = 10 if gas_resistance >= 30 else (2 if gas_resistance < 10 else 6)
 
         # Scor total rotunjit la 1 zecimală
-        comfort_score = round((score_temp + score_hum + score_light + score_dust + score_gas) / 5, 1)
-
+        comfort_score = round((score_temp + score_hum + score_dust + score_gas) / 4, 1)
 
         # Inserare date în tabelă (fără ID și timestamp - se generează automat)
         query = """

@@ -1,0 +1,88 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 60px;
+  background-color: #2c3e50;
+  padding-top: 1rem;
+  transition: width 0.3s;
+  overflow-x: hidden;
+  z-index: 1000;
+}
+
+.sidebar:hover {
+  width: 200px;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  margin-bottom: 1rem;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #ecf0f1;
+  padding: 0.75rem 1rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar a i {
+  font-size: 1.4rem;
+  margin-right: 10px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.sidebar a span {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.sidebar:hover a span {
+  opacity: 1;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background-color: #34495e;
+  color: #ffffff;
+  font-weight: bold;
+  border-left: 3px solid #1abc9c;
+}
+
+/* RESPONSIVE pentru ecrane mici */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
+  .sidebar ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .sidebar a {
+    justify-content: center;
+    padding: 0.5rem;
+  }
+
+  .sidebar a span {
+    display: none;
+  }
+
+  .content {
+    margin-left: 0 !important;
+  }
+}
