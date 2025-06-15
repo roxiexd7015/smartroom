@@ -62,6 +62,7 @@
 .topbar {
   background-color: #ffffff;
   height: 56px;
+  width: 100%;
   position: fixed;
   top: 0;
   z-index: 1100;
