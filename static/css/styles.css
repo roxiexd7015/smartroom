@@ -62,6 +62,35 @@ p {
   padding-right: 10px;
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
+  flex: 1 1 calc(20% - 1rem);
+  max-width: calc(20% - 1rem);
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 992px) {
+  .card {
+    flex: 1 1 calc(33.33% - 1rem);
+    max-width: calc(33.33% - 1rem);
+  }
+}
+@media (max-width: 768px) {
+  .card {
+    flex: 1 1 calc(50% - 1rem);
+    max-width: calc(50% - 1rem);
+  }
+}
+@media (max-width: 576px) {
+  .card {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
 }
 
 .card:hover {
